@@ -4,7 +4,7 @@ import QuestionWheel from "../QuestionWheel/QuestionWheel";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-
+import TeamsAnswers from '../../components/teamsAnswers/TeamsAnswers'
 function Projector() {
   document.title = "Викторина | Проектор";
 
@@ -259,24 +259,25 @@ function Projector() {
             <div className={styles.correctAnswer}>
               <h2 className={styles.sectionTitle}>Правильный ответ:</h2>
               <div className={styles.answer}>{correctAnswer}</div>
+              <TeamsAnswers question={question} />
             </div>
           )}
           <div className={styles.container}>
-            {questionImage ? (
-              <img
-                src={questionImage}
-                className={styles.image}
-                alt="Изображение к вопросу"
-                onError={(e) => {
-                  console.error("Failed to load image:", questionImage);
-                  e.target.style.display = "none";
-                }}
-              />
-            ) : (
-              <div className={styles.placeholder}>
-                Изображение появится здесь
-              </div>
-            )}
+          {!showAnswer && questionImage ? (
+            <img
+              src={questionImage}
+              className={styles.image}
+              alt="Изображение к вопросу"
+              onError={(e) => {
+                console.error("Failed to load image:", questionImage);
+                e.target.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className={styles.placeholder}>
+
+            </div>
+          )}
           </div>
         </>
       )}
