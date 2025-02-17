@@ -1,5 +1,6 @@
 .rating {
   text-align: center;
+background-color: white;
 
   tbody tr:nth-child(odd) {
     background-color: var(--red-color);
@@ -8,10 +9,16 @@
 
   th {
     padding: 1rem;
+    background-color: var(--header-color);
+    font-size: 1.2rem;
+    color: white;
+    width: 25vw;
+    height: 5vh;
   }
 
   td {
-    width: 30vw;
+    font-size: 1.5rem;
+    width: 25vw;
     height: 5vh;
   }
 }

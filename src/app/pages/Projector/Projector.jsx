@@ -4,7 +4,7 @@ import QuestionWheel from "../QuestionWheel/QuestionWheel";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import TeamsAnswers from '../../components/teamsAnswers/TeamsAnswers'
+import TeamsAnswers from "../../components/teamsAnswers/TeamsAnswers";
 function Projector() {
   document.title = "Викторина | Проектор";
 
@@ -14,7 +14,7 @@ function Projector() {
   const [question, setQuestion] = useState("");
   const [chapter, setChapter] = useState("");
   const [timer, setTimer] = useState(null);
-  const [showAnswer, setShowAnswer] = useState(null)
+  const [showAnswer, setShowAnswer] = useState(null);
   const [questionImage, setQuestionImage] = useState("");
   const [showWheel, setShowWheel] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState(null);
@@ -169,8 +169,8 @@ function Projector() {
                 setNewSeconds(data.seconds);
               }
               if (data.show_answer !== undefined) {
-                
-              }setShowAnswer(data.show_answer);
+              }
+              setShowAnswer(data.show_answer);
             }
           }
         } catch (error) {
@@ -210,7 +210,7 @@ function Projector() {
     handleTimerAudio(second);
   };
 
-  console.log(correctAnswer)
+  console.log(correctAnswer);
 
   return (
     <div className={styles.window}>
@@ -221,7 +221,7 @@ function Projector() {
           if (pendingQuestion) {
             setQuestion(pendingQuestion.content);
             setChapter(pendingQuestion.section);
-            setCorrectAnswer(pendingQuestion.answer)
+            setCorrectAnswer(pendingQuestion.answer);
             const timerDuration = 40;
             setNewSeconds(timerDuration);
             localStorage.setItem("answerTimerSeconds", timerDuration);
@@ -253,31 +253,30 @@ function Projector() {
                 />
               )}
             </div>
-            <p className={styles.question}>{question || "Ожидайте вопрос"}</p>
+            {!showAnswer && (
+              <p className={styles.question}>{question || "Ожидайте вопрос"}</p>
+            )}
           </div>
           {showAnswer && (
             <div className={styles.correctAnswer}>
-              <h2 className={styles.sectionTitle}>Правильный ответ:</h2>
               <div className={styles.answer}>{correctAnswer}</div>
               <TeamsAnswers question={question} />
             </div>
           )}
           <div className={styles.container}>
-          {!showAnswer && questionImage ? (
-            <img
-              src={questionImage}
-              className={styles.image}
-              alt="Изображение к вопросу"
-              onError={(e) => {
-                console.error("Failed to load image:", questionImage);
-                e.target.style.display = "none";
-              }}
-            />
-          ) : (
-            <div className={styles.placeholder}>
-
-            </div>
-          )}
+            {!showAnswer && questionImage ? (
+              <img
+                src={questionImage}
+                className={styles.image}
+                alt="Изображение к вопросу"
+                onError={(e) => {
+                  console.error("Failed to load image:", questionImage);
+                  e.target.style.display = "none";
+                }}
+              />
+            ) : (
+              <div className={styles.placeholder}></div>
+            )}
           </div>
         </>
       )}
