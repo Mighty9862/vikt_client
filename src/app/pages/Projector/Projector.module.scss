@@ -17,6 +17,34 @@
     background-position: center;
     padding: 0;
   }
+  .correctAnswer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1.5rem;
+
+    .sectionTitle {
+      font-size: 1.2rem;
+      color: white;
+      margin: 0 0 0.5rem 0;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+
+    .answer {
+      font-size: 1.3rem;
+      color: var(--correct-color);
+      font-weight: 500;
+      background: rgba(90, 210, 94, 0.1);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(59, 172, 63, 0.3);
+      text-align: center;
+
+      @media (max-width: 768px) {
+        font-size: 1.1rem;
+        padding: 0.8rem;
+      }
+    }
+  }
 
   .header {
     display: flex;

@@ -134,7 +134,7 @@ function Question() {
               {localStorage.getItem("chapter") || "Ожидайте раздел"}
             </h1>
             <div className={styles.timer}>
-              {localStorage.getItem('timer') && (
+              {timer && (
                 <AnswerTimer
                   time={extractTime}
                   duration={40}
@@ -153,7 +153,7 @@ function Question() {
               onChange={(e) => setAnswer(e.target.value)}
               type="text"
             />
-            {localStorage.getItem('timer') && (
+            {timer && (
               <Button
                 disabled={(seconds === 0 ? true : false) || loading}
                 onClick={sendAnswerData}
