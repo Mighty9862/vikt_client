@@ -77,34 +77,63 @@ function Question() {
   }, []);
 
   useEffect(() => {
+    if (localStorage.getItem("registrationComplete") === "true") {
+      return;
+    }
+
     const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000/api/v2/websocket/ws/player";
-    let ws = new WebSocket(WS_URL);
+    let ws = null;
     let reconnectTimer;
+    let isReconnecting = false;
+    let hasSetName = false;
 
     const connect = () => {
+      if (isReconnecting || ws?.readyState === WebSocket.CONNECTING) return;
+      isReconnecting = true;
+      
+      if (ws?.readyState === WebSocket.OPEN) {
+        hasSetName = false;
+        ws.close();
+      }
+
       ws = new WebSocket(WS_URL);
       
       ws.onopen = () => {
+        console.log("WebSocket соединение установлено");
         setWsConnected(true);
-        try {
+        isReconnecting = false;
+        
+        if (!hasSetName) {
           const playerName = localStorage.getItem("playerName");
-          ws.send(
-            JSON.stringify({
-              type: "set_name",
-              name: playerName
-            })
-          );
-          toast.success("Подключение установлено!");
-        } catch (error) {
-          console.error('Ошибка при отправке имени игрока:', error);
-          toast.error("Ошибка при инициализации подключения");
+          if (playerName) {
+            console.log("Отправка имени игрока:", playerName);
+            setTimeout(() => {
+              if (ws.readyState === WebSocket.OPEN) {
+                ws.send(
+                  JSON.stringify({
+                    type: "set_name",
+                    name: playerName,
+                    reconnect: true
+                  })
+                );
+                hasSetName = true;
+                toast.success("Подключение установлено!");
+              }
+            }, 500);
+          } else {
+            console.error("Имя игрока не найдено в localStorage");
+            toast.error("Имя игрока не найдено");
+          }
         }
       };
 
       ws.onclose = () => {
         setWsConnected(false);
-        toast.warning("Соединение потеряно. Переподключение...");
-        reconnectTimer = setTimeout(connect, 3000);
+        if (isComponentMounted && !isReconnecting) {
+          hasSetName = false;
+          toast.warning("Соединение потеряно. Переподключение...");
+          reconnectTimer = setTimeout(connect, 3000);
+        }
       };
 
       ws.onerror = (error) => {
@@ -177,10 +206,13 @@ function Question() {
       };
     };
 
-    connect();
+    const initialConnectionTimer = setTimeout(connect, 1000);
 
     return () => {
+      clearTimeout(initialConnectionTimer);
       clearTimeout(reconnectTimer);
+      isReconnecting = false;
+      hasSetName = false;
       if (ws) {
         ws.close();
       }
