@@ -117,7 +117,7 @@ function Projector() {
     try {
       isConnecting.current = true;
       const websocket = new WebSocket(
-        "ws://80.253.19.93:8000/api/v2/websocket/ws/spectator"
+        "ws://localhost:8000/api/v2/websocket/ws/spectator"
       );
 
       websocket.onopen = () => {
@@ -228,7 +228,7 @@ function Projector() {
             setTimer(pendingQuestion.timer);
             setShowAnswer(pendingQuestion.show_answer);
             if (pendingQuestion.question_image) {
-              const imagePath = `http://80.253.19.93:8000/static/images/${pendingQuestion.question_image}`;
+              const imagePath = `http://localhost:8000/static/images/${pendingQuestion.question_image}`;
               setQuestionImage(imagePath);
             } else {
               setQuestionImage("");

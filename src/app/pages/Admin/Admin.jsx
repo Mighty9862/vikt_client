@@ -17,25 +17,25 @@ function Admin() {
 
   function startGame() {
     
-    fetch("http://80.253.19.93:8000/api/v2/websocket/admin/start", { method: "POST" });
+    fetch("http://localhost:8000/api/v2/websocket/admin/start", { method: "POST" });
   }
   function nextQuestion() {
-    fetch("http://80.253.19.93:8000/api/v2/websocket/admin/next", { method: "POST" });
+    fetch("http://localhost:8000/api/v2/websocket/admin/next", { method: "POST" });
   }
   function stopGame() {
-    fetch("http://80.253.19.93:8000/api/v2/websocket/admin/stop", { method: "POST" });
+    fetch("http://localhost:8000/api/v2/websocket/admin/stop", { method: "POST" });
   }
   function showRating() {
-    fetch("http://80.253.19.93:8000/api/v2/websocket/admin/show_rating", { method: "POST" });
+    fetch("http://localhost:8000/api/v2/websocket/admin/show_rating", { method: "POST" });
   }
   function showQuestion() {
-    fetch("http://80.253.19.93:8000/api/v2/websocket/admin/show_question", { method: "POST" });
+    fetch("http://localhost:8000/api/v2/websocket/admin/show_question", { method: "POST" });
   }
   function showAnswers() {
-    fetch("http://80.253.19.93:8000/api/v2/websocket/admin/show_answer", { method: "POST" });
+    fetch("http://localhost:8000/api/v2/websocket/admin/show_answer", { method: "POST" });
   }
   function startTimer() {
-    fetch("http://80.253.19.93:8000/api/v2/websocket/admin/start_timer", { method: "POST" });
+    fetch("http://localhost:8000/api/v2/websocket/admin/start_timer", { method: "POST" });
 
   }
 

@@ -134,44 +134,48 @@ const QuestionWheel = ({ isVisible, onAnimationComplete, animationSpeed = 4 }) =
   };
 
   return (
-    <AnimatePresence mode="wait">
-      {showAudioPrompt && (
-        <motion.div
-          className={styles.audioPrompt}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <button onClick={enableAudio} className={styles.audioButton}>
-            Включить звук
-          </button>
-        </motion.div>
-      )}
-      {isVisible && (
-        <motion.div
-          className={styles.modal}
-          variants={modalVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-        >
-          <div className={styles.wheelContainer}>
-            <motion.div
-              className={styles.wheel}
-              variants={wheelVariants}
-              initial="initial"
-              animate="animate"
-            >
-              {extendedQuestions.map((question, index) => (
-                <div key={index} className={styles.questionItem}>
-                  {truncateText(question)}
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <>
+      <AnimatePresence>
+        {showAudioPrompt && (
+          <motion.div
+            className={styles.audioPrompt}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <button onClick={enableAudio} className={styles.audioButton}>
+              Включить звук
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            className={styles.modal}
+            variants={modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <div className={styles.wheelContainer}>
+              <motion.div
+                className={styles.wheel}
+                variants={wheelVariants}
+                initial="initial"
+                animate="animate"
+              >
+                {extendedQuestions.map((question, index) => (
+                  <div key={`question-${index}`} className={styles.questionItem}>
+                    {truncateText(question)}
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
