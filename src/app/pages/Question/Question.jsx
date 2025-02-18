@@ -81,7 +81,7 @@ function Question() {
       return;
     }
 
-    const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000/api/v2/websocket/ws/player";
+    const WS_URL = import.meta.env.VITE_WS_URL || "ws://80.253.19.93:8000/api/v2/websocket/ws/player";
     let ws = null;
     let reconnectTimer;
     let isReconnecting = false;
