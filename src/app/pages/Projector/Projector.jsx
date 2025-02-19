@@ -199,7 +199,7 @@ function Projector() {
           lastMessageTime = now;
           
           if (data.type === "rating") {
-            // Останавливаем аудио перед навигацией
+            // Останавливаем аудио и очищаем ресурсы
             if (mainAudioRef.current) {
               mainAudioRef.current.pause();
               mainAudioRef.current.currentTime = 0;
@@ -209,7 +209,7 @@ function Projector() {
               finalAudioRef.current.currentTime = 0;
             }
 
-            // Закрываем WebSocket и очищаем состояние
+            // Закрываем WebSocket соединение
             if (wsRef.current) {
               wsRef.current.close();
               wsRef.current = null;
@@ -221,17 +221,14 @@ function Projector() {
               reconnectTimeoutRef.current = null;
             }
             
-            // Устанавливаем флаги для предотвращения переподключения
+            // Важно: устанавливаем флаг монтирования в false перед навигацией
             setIsComponentMounted(false);
-            isConnecting.current = true;
             
-            // Выполняем навигацию после очистки всех ресурсов
-            setTimeout(() => {
-              navigate("/rating", { 
-                state: { data: data },
-                replace: true 
-              });
-            }, 0);
+            // Выполняем навигацию
+            navigate("/rating", { 
+              state: { data: data },
+              replace: true 
+            });
             
             return;
           } else if (data.type === "question") {
@@ -305,14 +302,29 @@ function Projector() {
 
   console.log(correctAnswer);
 
-  // Добавляем эффект для очистки при размонтировании
+  // Изменяем эффект очистки при размонтировании
   useEffect(() => {
     return () => {
+      // Устанавливаем флаг размонтирования
       setIsComponentMounted(false);
+      
+      // Очищаем аудио ресурсы
+      if (mainAudioRef.current) {
+        mainAudioRef.current.pause();
+        mainAudioRef.current = null;
+      }
+      if (finalAudioRef.current) {
+        finalAudioRef.current.pause();
+        finalAudioRef.current = null;
+      }
+      
+      // Закрываем WebSocket если он открыт
       if (wsRef.current) {
         wsRef.current.close();
         wsRef.current = null;
       }
+      
+      // Очищаем таймер переподключения
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;
