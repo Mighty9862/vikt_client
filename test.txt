@@ -1,0 +1,41 @@
+WebSocket соединение установлено
+2index-XhoJk4KY.js:65 
+3index-XhoJk4KY.js:65 Error parsing WebSocket message: SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at $.onmessage (index-XhoJk4KY.js:65:22408)
+$.onmessage @ index-XhoJk4KY.js:65
+index-XhoJk4KY.js:65 
+index-XhoJk4KY.js:65 Error parsing WebSocket message: SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at $.onmessage (index-XhoJk4KY.js:65:22408)
+$.onmessage @ index-XhoJk4KY.js:65
+2index-XhoJk4KY.js:65 Битва за Москву
+index-XhoJk4KY.js:65 Error parsing WebSocket message: SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at $.onmessage (index-XhoJk4KY.js:65:22408)
+$.onmessage @ index-XhoJk4KY.js:65
+44index-XhoJk4KY.js:65 Битва за Москву
+index-XhoJk4KY.js:65 Error parsing WebSocket message: SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at $.onmessage (index-XhoJk4KY.js:65:22408)
+$.onmessage @ index-XhoJk4KY.js:65
+40index-XhoJk4KY.js:65 Битва за Москву
+index-XhoJk4KY.js:65 Error parsing WebSocket message: SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at $.onmessage (index-XhoJk4KY.js:65:22408)
+$.onmessage @ index-XhoJk4KY.js:65
+2index-XhoJk4KY.js:65 Битва за Москву
+index-XhoJk4KY.js:65 (2) [{…}, {…}]
+index-XhoJk4KY.js:65 Алексей Петрович Маресьев
+index-XhoJk4KY.js:65 Attempting to play sound...
+index-XhoJk4KY.js:65 Sound playing successfully
+index-XhoJk4KY.js:65 Error parsing WebSocket message: SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at $.onmessage (index-XhoJk4KY.js:65:22408)
+$.onmessage @ index-XhoJk4KY.js:65
+50index-XhoJk4KY.js:65 Алексей Петрович Маресьев
+index-XhoJk4KY.js:65 Error parsing WebSocket message: SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at $.onmessage (index-XhoJk4KY.js:65:22408)
+$.onmessage @ index-XhoJk4KY.js:65
+12index-XhoJk4KY.js:65 Алексей Петрович Маресьев

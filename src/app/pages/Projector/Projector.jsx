@@ -165,43 +165,64 @@ function Projector() {
 
       websocket.onmessage = (event) => {
         try {
+          // Проверяем, что данные не пустые
+          if (!event.data) {
+            console.warn("Получено пустое WebSocket сообщение");
+            return;
+          }
+
           if (event.data === "clear_storage") {
             localStorage.clear();
             location.reload();
             return;
           }
 
-          const data = JSON.parse(event.data);
+          // Проверяем, что данные являются валидным JSON
+          let data;
+          try {
+            data = JSON.parse(event.data);
+          } catch (parseError) {
+            console.warn("Получено невалидное JSON сообщение:", event.data);
+            return;
+          }
+
           const now = Date.now();
           
           // Проверяем, не является ли это дублирующим сообщением
           if (lastMessage && 
               JSON.stringify(lastMessage) === JSON.stringify(data) && 
               now - lastMessageTime < MESSAGE_DEBOUNCE) {
-            return; // Пропускаем дублирующее сообщение
+            return;
           }
 
           lastMessage = data;
           lastMessageTime = now;
           
           if (data.type === "rating") {
-            // Закрываем текущее соединение перед навигацией
+            // Сначала закрываем WebSocket соединение
             if (wsRef.current) {
               wsRef.current.close();
               wsRef.current = null;
             }
+            
             // Очищаем таймер переподключения
             if (reconnectTimeoutRef.current) {
               clearTimeout(reconnectTimeoutRef.current);
               reconnectTimeoutRef.current = null;
             }
+            
             // Устанавливаем флаг размонтирования
             setIsComponentMounted(false);
+            
+            // Отключаем логику переподключения
+            isConnecting.current = true;
+            
             // Выполняем навигацию
             navigate("/rating", { 
               state: { data: data },
-              replace: true
+              replace: true 
             });
+            return; // Важно прервать выполнение после навигации
           } else if (data.type === "question") {
             // Сбрасываем все состояния при получении нового вопроса
             setShowAnswer(data.show_answer || false);
