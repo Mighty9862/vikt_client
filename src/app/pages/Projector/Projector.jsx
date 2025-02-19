@@ -199,7 +199,17 @@ function Projector() {
           lastMessageTime = now;
           
           if (data.type === "rating") {
-            // Сначала закрываем WebSocket соединение
+            // Останавливаем аудио перед навигацией
+            if (mainAudioRef.current) {
+              mainAudioRef.current.pause();
+              mainAudioRef.current.currentTime = 0;
+            }
+            if (finalAudioRef.current) {
+              finalAudioRef.current.pause();
+              finalAudioRef.current.currentTime = 0;
+            }
+
+            // Закрываем WebSocket и очищаем состояние
             if (wsRef.current) {
               wsRef.current.close();
               wsRef.current = null;
@@ -211,18 +221,19 @@ function Projector() {
               reconnectTimeoutRef.current = null;
             }
             
-            // Устанавливаем флаг размонтирования
+            // Устанавливаем флаги для предотвращения переподключения
             setIsComponentMounted(false);
-            
-            // Отключаем логику переподключения
             isConnecting.current = true;
             
-            // Выполняем навигацию
-            navigate("/rating", { 
-              state: { data: data },
-              replace: true 
-            });
-            return; // Важно прервать выполнение после навигации
+            // Выполняем навигацию после очистки всех ресурсов
+            setTimeout(() => {
+              navigate("/rating", { 
+                state: { data: data },
+                replace: true 
+              });
+            }, 0);
+            
+            return;
           } else if (data.type === "question") {
             // Сбрасываем все состояния при получении нового вопроса
             setShowAnswer(data.show_answer || false);
