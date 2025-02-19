@@ -1,24 +1,48 @@
 import styles from "./Rating.module.scss";
 import Table from "../../components/table/Table";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
 
 function Rating() {
   document.title = "Викторина | Рейтинг";
-
   const navigate = useNavigate();
+  const wsRef = useRef(null);
+  const [isComponentMounted, setIsComponentMounted] = useState(true);
 
-  const ws = new WebSocket("ws://80.253.19.93:8000/api/v2/websocket/ws/spectator");
+  useEffect(() => {
+    // Устанавливаем флаг монтирования
+    setIsComponentMounted(true);
 
-  function updateDisplay(data) {
-    if (data.type === "question") {
-      navigate("/projector", { state: { data: data } });
-    }
-  }
+    // Создаем WebSocket соединение
+    wsRef.current = new WebSocket("ws://80.253.19.93:8000/api/v2/websocket/ws/spectator");
 
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    updateDisplay(data);
-  };
+    wsRef.current.onmessage = (event) => {
+      if (!isComponentMounted) return;
+
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "question") {
+          // Закрываем текущее соединение перед навигацией
+          if (wsRef.current) {
+            wsRef.current.close();
+            wsRef.current = null;
+          }
+          navigate("/projector", { state: { data: data } });
+        }
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+
+    // Очистка при размонтировании
+    return () => {
+      setIsComponentMounted(false);
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+    };
+  }, [navigate]);
 
   return (
     <div className={styles.window}>
