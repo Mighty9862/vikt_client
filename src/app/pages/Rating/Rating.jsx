@@ -16,7 +16,7 @@ function Rating() {
     const connectWebSocket = () => {
       // Если соединение уже существует, не создаем новое
       if (wsRef.current?.readyState === WebSocket.OPEN) return;
-      
+
       // Закрываем предыдущее соединение если оно есть
       if (wsRef.current) {
         wsRef.current.close();
@@ -58,7 +58,7 @@ function Rating() {
 
     return () => {
       setIsComponentMounted(false);
-      
+
       // Очищаем таймер переподключения
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);

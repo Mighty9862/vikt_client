@@ -27,15 +27,15 @@ function Question() {
   const [chapter, setChapter] = useState("");
   const [newSeconds, setNewSeconds] = useState(null);
   const [timer, setTimer] = useState(null);
-  const [showWheel, setShowWheel] = useState(() => 
+  const [showWheel, setShowWheel] = useState(() =>
     JSON.parse(localStorage.getItem("showWheel") || "false")
   );
-  const [pendingQuestion, setPendingQuestion] = useState(() => 
+  const [pendingQuestion, setPendingQuestion] = useState(() =>
     JSON.parse(localStorage.getItem("pendingQuestion") || "null")
   );
   const [wsConnected, setWsConnected] = useState(false);
   const [isComponentMounted, setIsComponentMounted] = useState(true);
-  const [answerSubmitted, setAnswerSubmitted] = useState(() => 
+  const [answerSubmitted, setAnswerSubmitted] = useState(() =>
     JSON.parse(localStorage.getItem("answerSubmitted") || "false")
   );
 
@@ -90,19 +90,19 @@ function Question() {
     const connect = () => {
       if (isReconnecting || ws?.readyState === WebSocket.CONNECTING) return;
       isReconnecting = true;
-      
+
       if (ws?.readyState === WebSocket.OPEN) {
         hasSetName = false;
         ws.close();
       }
 
       ws = new WebSocket(WS_URL);
-      
+
       ws.onopen = () => {
         console.log("WebSocket соединение установлено");
         setWsConnected(true);
         isReconnecting = false;
-        
+
         if (!hasSetName) {
           const playerName = localStorage.getItem("playerName");
           if (playerName) {
@@ -154,7 +154,7 @@ function Question() {
           console.log("Тип данных:", typeof data);
 
           const timerDuration = 40;
-          
+
           if (isComponentMounted) {
             const isNewQuestion = data.text !== localStorage.getItem("question");
 
@@ -164,7 +164,7 @@ function Question() {
               localStorage.removeItem("pendingQuestion");
               localStorage.setItem("answerSubmitted", "false");
               localStorage.setItem("answerTimerSeconds", timerDuration.toString());
-              
+
               setShowWheel(false);
               setPendingQuestion(null);
               setAnswerSubmitted(false);
@@ -252,7 +252,7 @@ function Question() {
       toast.warning("Введите ответ");
       return;
     }
-    
+
     if (timer) {
       setLoading(true);
     }

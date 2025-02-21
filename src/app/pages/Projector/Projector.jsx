@@ -29,7 +29,7 @@ function Projector() {
 
   // Добавляем флаг для отслеживания монтирования компонента
   const [isComponentMounted, setIsComponentMounted] = useState(true);
-  
+
   // Добавляем состояние для отслеживания статуса соединения
   const [wsConnected, setWsConnected] = useState(false);
 
@@ -187,17 +187,17 @@ function Projector() {
           }
 
           const now = Date.now();
-          
+
           // Проверяем, не является ли это дублирующим сообщением
-          if (lastMessage && 
-              JSON.stringify(lastMessage) === JSON.stringify(data) && 
+          if (lastMessage &&
+              JSON.stringify(lastMessage) === JSON.stringify(data) &&
               now - lastMessageTime < MESSAGE_DEBOUNCE) {
             return;
           }
 
           lastMessage = data;
           lastMessageTime = now;
-          
+
           if (data.type === "rating") {
             // Останавливаем аудио и очищаем ресурсы
             if (mainAudioRef.current) {
@@ -214,22 +214,22 @@ function Projector() {
               wsRef.current.close();
               wsRef.current = null;
             }
-            
+
             // Очищаем таймер переподключения
             if (reconnectTimeoutRef.current) {
               clearTimeout(reconnectTimeoutRef.current);
               reconnectTimeoutRef.current = null;
             }
-            
+
             // Важно: устанавливаем флаг монтирования в false перед навигацией
             setIsComponentMounted(false);
-            
+
             // Выполняем навигацию
-            navigate("/rating", { 
+            navigate("/rating", {
               state: { data: data },
-              replace: true 
+              replace: true
             });
-            
+
             return;
           } else if (data.type === "question") {
             // Сбрасываем все состояния при получении нового вопроса
@@ -238,9 +238,9 @@ function Projector() {
             setQuestion(data.content || "");
             setChapter(data.section || "");
             setCorrectAnswer(data.answer || "");
-            setQuestionImage(data.question_image ? 
+            setQuestionImage(data.question_image ?
               `http://80.253.19.93:8000/static/images/${data.question_image}` : "");
-            
+
             // Если таймер выключен, останавливаем аудио
             if (!data.timer) {
               if (mainAudioRef.current) {
@@ -266,7 +266,7 @@ function Projector() {
     } catch (error) {
       console.error("Error creating WebSocket connection:", error);
       isConnecting.current = false;
-      
+
       if (isComponentMounted) {
         reconnectTimeoutRef.current = setTimeout(() => {
           connectWebSocket();
@@ -277,7 +277,7 @@ function Projector() {
 
   useEffect(() => {
     setIsComponentMounted(true);
-    
+
     // Задержка перед первым подключением
     const initialConnectionTimer = setTimeout(() => {
       connectWebSocket();
@@ -286,7 +286,7 @@ function Projector() {
     return () => {
       setIsComponentMounted(false);
       clearTimeout(initialConnectionTimer);
-      
+
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
       }
@@ -307,7 +307,7 @@ function Projector() {
     return () => {
       // Устанавливаем флаг размонтирования
       setIsComponentMounted(false);
-      
+
       // Очищаем аудио ресурсы
       if (mainAudioRef.current) {
         mainAudioRef.current.pause();
@@ -317,13 +317,13 @@ function Projector() {
         finalAudioRef.current.pause();
         finalAudioRef.current = null;
       }
-      
+
       // Закрываем WebSocket если он открыт
       if (wsRef.current) {
         wsRef.current.close();
         wsRef.current = null;
       }
-      
+
       // Очищаем таймер переподключения
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
