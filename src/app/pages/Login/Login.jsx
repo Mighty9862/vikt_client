@@ -9,7 +9,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { instance } from "../../../api/instance";
 
 function Login() {
-  document.title = "Викторина | Вход";
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -37,12 +36,12 @@ function Login() {
 
     setIsLoading(true);
     try {
-        const response = await instance.post(
-          `/users/login?username=${encodeURIComponent(
-            username
-          )}&password=${encodeURIComponent(password)}`
-        );
-        
+      const response = await instance.post(
+        `/users/login?username=${encodeURIComponent(
+          username
+        )}&password=${encodeURIComponent(password)}`
+      );
+
       // Сохраняем токены в localStorage
       const { access_token, refresh_token } = response.data;
       localStorage.setItem("accessToken", access_token);
@@ -63,6 +62,7 @@ function Login() {
 
   return (
     <div className={styles.window}>
+      <title>Викторина | Вход</title>
       <form className={styles.form}>
         <h1 className={styles.header}>Вход</h1>
         <label htmlFor="username">Введите название команды</label>

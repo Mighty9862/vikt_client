@@ -19,7 +19,6 @@ const fetchUser = async () => {
 };
 
 function Question() {
-  document.title = "Викторина";
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [seconds, setSeconds] = useState(null);
@@ -51,10 +50,10 @@ function Question() {
 
     // Восстанавливаем все сохраненные состояния при монтировании
     if (savedTimer) {
-      setTimer(savedTimer === 'true');
+      setTimer(savedTimer === "true");
     }
     if (savedAnswerSubmitted) {
-      setAnswerSubmitted(savedAnswerSubmitted === 'true');
+      setAnswerSubmitted(savedAnswerSubmitted === "true");
     }
     if (savedSeconds && savedQuestion) {
       setSeconds(parseInt(savedSeconds));
@@ -64,8 +63,11 @@ function Question() {
 
   // Добавим логирование при инициализации
   useEffect(() => {
-    console.log('Initial showWheel:', localStorage.getItem("showWheel"));
-    console.log('Initial pendingQuestion:', localStorage.getItem("pendingQuestion"));
+    console.log("Initial showWheel:", localStorage.getItem("showWheel"));
+    console.log(
+      "Initial pendingQuestion:",
+      localStorage.getItem("pendingQuestion")
+    );
   }, []);
 
   // Добавим очистку при размонтировании компонента
@@ -81,7 +83,9 @@ function Question() {
       return;
     }
 
-    const WS_URL = import.meta.env.VITE_WS_URL || "ws://80.253.19.93:8000/api/v2/websocket/ws/player";
+    const WS_URL =
+      import.meta.env.VITE_WS_URL ||
+      "ws://80.253.19.93:8000/api/v2/websocket/ws/player";
     let ws = null;
     let reconnectTimer;
     let isReconnecting = false;
@@ -113,7 +117,7 @@ function Question() {
                   JSON.stringify({
                     type: "set_name",
                     name: playerName,
-                    reconnect: true
+                    reconnect: true,
                   })
                 );
                 hasSetName = true;
@@ -137,7 +141,7 @@ function Question() {
       };
 
       ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        console.error("WebSocket error:", error);
         toast.error("Ошибка подключения");
       };
 
@@ -156,14 +160,18 @@ function Question() {
           const timerDuration = 40;
 
           if (isComponentMounted) {
-            const isNewQuestion = data.text !== localStorage.getItem("question");
+            const isNewQuestion =
+              data.text !== localStorage.getItem("question");
 
             if (isNewQuestion) {
               // Сброс состояний только для нового вопроса
               localStorage.removeItem("showWheel");
               localStorage.removeItem("pendingQuestion");
               localStorage.setItem("answerSubmitted", "false");
-              localStorage.setItem("answerTimerSeconds", timerDuration.toString());
+              localStorage.setItem(
+                "answerTimerSeconds",
+                timerDuration.toString()
+              );
 
               setShowWheel(false);
               setPendingQuestion(null);
@@ -180,18 +188,18 @@ function Question() {
             }
 
             // Обновляем остальные данные
-            setChapter(data.section || '');
-            setQuestion(data.text || '');
+            setChapter(data.section || "");
+            setQuestion(data.text || "");
             setTimer(data.timer);
             setLoading(false);
 
-            localStorage.setItem('timer', data.timer ? 'true' : 'false');
+            localStorage.setItem("timer", data.timer ? "true" : "false");
             localStorage.setItem("loading", "false");
-            localStorage.setItem("chapter", data.section || '');
-            localStorage.setItem("question", data.text || '');
+            localStorage.setItem("chapter", data.section || "");
+            localStorage.setItem("question", data.text || "");
 
             if (data.timer === false && data.answer !== null) {
-              console.log('Устанавливаем новое колесо');
+              console.log("Устанавливаем новое колесо");
               setPendingQuestion(data);
               setShowWheel(true);
               localStorage.setItem("pendingQuestion", JSON.stringify(data));
@@ -263,7 +271,7 @@ function Question() {
         `/answers/?question=${encodeURIComponent(
           question
         )}&username=${encodeURIComponent(
-          user?.username || ''
+          user?.username || ""
         )}&answer=${encodeURIComponent(answer)}`
       );
       toast.success("Ответ отправлен!");
@@ -289,28 +297,33 @@ function Question() {
 
   return (
     <div className={styles.window}>
-      {console.log('Rendering with showWheel:', showWheel)}
+      <title>Викторина</title>
+      {console.log("Rendering with showWheel:", showWheel)}
       {!wsConnected && (
-        <div className={styles.connectionStatus}>
-          Подключение к серверу...
-        </div>
+        <div className={styles.connectionStatus}>Подключение к серверу...</div>
       )}
       <QuestionWheel
         key="question-wheel"
         isVisible={showWheel}
         onAnimationComplete={() => {
-          console.log('Animation completed');
+          console.log("Animation completed");
           if (pendingQuestion) {
             const timerDuration = 40;
             setNewSeconds(timerDuration);
-            setChapter(pendingQuestion.section || '');
-            setQuestion(pendingQuestion.text || '');
+            setChapter(pendingQuestion.section || "");
+            setQuestion(pendingQuestion.text || "");
             setTimer(pendingQuestion.timer);
 
-            localStorage.setItem('timer', pendingQuestion.timer ? 'true' : 'false');
-            localStorage.setItem("answerTimerSeconds", timerDuration.toString());
-            localStorage.setItem("chapter", pendingQuestion.section || '');
-            localStorage.setItem("question", pendingQuestion.text || '');
+            localStorage.setItem(
+              "timer",
+              pendingQuestion.timer ? "true" : "false"
+            );
+            localStorage.setItem(
+              "answerTimerSeconds",
+              timerDuration.toString()
+            );
+            localStorage.setItem("chapter", pendingQuestion.section || "");
+            localStorage.setItem("question", pendingQuestion.text || "");
             setPendingQuestion(null);
             setShowWheel(false);
             localStorage.setItem("showWheel", "false");
@@ -349,7 +362,13 @@ function Question() {
             />
             <Button
               type="submit"
-              disabled={!wsConnected || !timer || seconds === 0 || loading || answerSubmitted}
+              disabled={
+                !wsConnected ||
+                !timer ||
+                seconds === 0 ||
+                loading ||
+                answerSubmitted
+              }
             >
               {loading ? "Отправка..." : "Отправить ответ"}
             </Button>

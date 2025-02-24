@@ -7,15 +7,22 @@ import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { instance } from "../../../api/instance";
+import useRegistrationStore from "../../store/useRegistrationStore";
 
 function Registration() {
-  document.title = "Викторина | Регистрация";
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordRepeat, setPasswordRepeat] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    username,
+    password,
+    passwordRepeat,
+    isLoading,
+    setUsername,
+    setPassword,
+    setPasswordRepeat,
+    setIsLoading,
+    setToken,
+  } = useRegistrationStore();
 
   // Валидация формы
   const validateForm = () => {
@@ -48,12 +55,13 @@ function Registration() {
         )}&password=${encodeURIComponent(password)}`
       );
 
-      // Сохраняем токены и имя пользователя
+      // Сохраняем токены в Zustand
       const { access_token, refresh_token } = response.data.user;
-      localStorage.setItem("accessToken", access_token);
+      console.log(response.data.user)
+localStorage.setItem('accessToken', access_token)
       localStorage.setItem("refreshToken", refresh_token);
       localStorage.setItem("playerName", username);
-      
+
       // Добавляем флаг, что регистрация завершена
       localStorage.setItem("registrationComplete", "true");
 
@@ -66,7 +74,6 @@ function Registration() {
         localStorage.removeItem("registrationComplete"); // Очищаем флаг
         navigate("/question");
       }, 3500); // Увеличиваем время до редиректа
-
     } catch (error) {
       const errorMessage =
         error.response?.data?.detail || "Ошибка при регистрации";
@@ -78,6 +85,7 @@ function Registration() {
 
   return (
     <div className={styles.window}>
+      <title>Викторина | Регистрация</title>
       <form className={styles.form}>
         <h1 className={styles.header}>Регистрация</h1>
         <label htmlFor="username">Введите название команды</label>
