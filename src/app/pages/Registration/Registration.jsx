@@ -15,14 +15,13 @@ function Registration() {
   const {
     username,
     password,
-    passwordRepeat,
     isLoading,
     setUsername,
     setPassword,
-    setPasswordRepeat,
     setIsLoading,
-    setToken,
   } = useRegistrationStore();
+
+  const [passwordRepeat, setPasswordRepeat] = useState("");
 
   // Валидация формы
   const validateForm = () => {
@@ -48,6 +47,7 @@ function Registration() {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    
     try {
       const response = await instance.post(
         `/users/registration?username=${encodeURIComponent(
@@ -60,7 +60,6 @@ function Registration() {
       console.log(response.data.user);
       localStorage.setItem("accessToken", access_token);
       localStorage.setItem("refreshToken", refresh_token);
-      localStorage.setItem("playerName", username);
 
       // Добавляем флаг, что регистрация завершена
       localStorage.setItem("registrationComplete", "true");
