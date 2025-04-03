@@ -1,6 +1,6 @@
 import styles from "./Answers.module.scss";
 import AnswersTable from "../../components/answersTable/AnswersTable";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { instance } from "../../../api/instance";
@@ -9,9 +9,7 @@ function Answers() {
   const [questionId, setQuestionId] = useState(null);
   const [question, setQuestion] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
-  const wsRef = useRef(null);
-  const reconnectTimeoutRef = useRef(null);
-  const isConnecting = useRef(false);
+  const [ws, setWs] = useState(null);
 
   // Получение правильного ответа
   const { data: questionData } = useQuery(
@@ -33,90 +31,60 @@ function Answers() {
 
   // Функция создания WebSocket соединения
   const createWebSocket = useCallback(() => {
-    if (isConnecting.current) {
-      return;
-    }
+    const newWs = new WebSocket(
+      "ws://80.253.19.93:8000/api/v2/websocket/ws/spectator"
+    );
 
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
+    newWs.onmessage = (event) => {
+      if (event.data === "clear_storage") {
+        localStorage.clear();
+        location.reload();
+        return;
+      }
 
-    try {
-      isConnecting.current = true;
-      const newWs = new WebSocket(
-        "ws://10.10.0.88:8000/api/v2/websocket/ws/spectator"
-      );
+      try {
+        const data = JSON.parse(event.data);
 
-      newWs.onopen = () => {
-        isConnecting.current = false;
-        wsRef.current = newWs;
-      };
+        if (data.type === "question") {
+          // Получаем данные из сообщения
+          const content = data.content || data.text;
+          const answer = data.answer;
 
-      newWs.onclose = () => {
-        wsRef.current = null;
-        isConnecting.current = false;
-        
-        reconnectTimeoutRef.current = setTimeout(() => {
-          createWebSocket();
-        }, 3000);
-      };
-
-      newWs.onmessage = (event) => {
-        if (event.data === "clear_storage") {
-          localStorage.clear();
-          location.reload();
-          return;
-        }
-
-        try {
-          const data = JSON.parse(event.data);
-
-          if (data.type === "question") {
-            // Получаем данные из сообщения
-            const content = data.content || data.text;
-            const answer = data.answer;
-
-            // Обновляем состояние
-            if (content) {
-              setQuestion(content);
-              localStorage.setItem("question", content);
-            }
-            if (answer) {
-              setCorrectAnswer(answer);
-            }
+          // Обновляем состояние
+          if (content) {
+            setQuestion(content);
+            localStorage.setItem("question", content);
           }
-        } catch (error) {
-          // Если не удалось распарсить JSON, проверяем не текстовый ли это вопрос
-          console.error("Error parsing WebSocket message:", error);
+          if (answer) {
+            setCorrectAnswer(answer);
+          }
         }
-      };
-      newWs.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        toast.error("Ошибка подключения к серверу");
-      };
+      } catch (error) {
+        // Если не удалось распарсить JSON, проверяем не текстовый ли это вопрос
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+    newWs.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      toast.error("Ошибка подключения к серверу");
+    };
 
-      return newWs;
-    } catch (error) {
-      console.error("Error creating WebSocket connection:", error);
-      isConnecting.current = false;
-      
-      reconnectTimeoutRef.current = setTimeout(() => {
-        createWebSocket();
+    newWs.onclose = () => {
+      setTimeout(() => {
+        setWs(createWebSocket());
       }, 3000);
-    }
+    };
+
+    return newWs;
   }, []);
 
   useEffect(() => {
-    createWebSocket();
+    const websocket = createWebSocket();
+    setWs(websocket);
 
     return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-
-      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        wsRef.current.close();
+      if (websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.close();
       }
     };
   }, [createWebSocket]);
