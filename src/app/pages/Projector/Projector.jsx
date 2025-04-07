@@ -217,7 +217,7 @@ function Projector() {
               {timer && (
                 <AnswerTimer
                   time={extractTime}
-                  duration={40}
+                  duration={10}
                   onTimeUp={handleTimeUp}
                   question={question}
                 />
