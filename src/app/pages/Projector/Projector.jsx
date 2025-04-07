@@ -61,7 +61,7 @@ function Projector() {
       return;
     }
 
-    if (second === 40 && mainAudioRef.current) {
+    if (second === 10 && mainAudioRef.current) {
       mainAudioRef.current.currentTime = 0;
       mainAudioRef.current.play();
     }
@@ -188,7 +188,7 @@ function Projector() {
             setQuestion(pendingQuestion.content);
             setChapter(pendingQuestion.section);
             setCorrectAnswer(pendingQuestion.answer);
-            const timerDuration = 40;
+            const timerDuration = 10;
             setNewSeconds(timerDuration);
             localStorage.setItem("answerTimerSeconds", timerDuration);
             setTimer(pendingQuestion.timer);
