@@ -43,6 +43,7 @@ function Admin() {
   function startTimer() {
     console.log("Запуск таймера на 40 секунд");
     localStorage.setItem("answerTimerSeconds", "40");
+    localStorage.setItem("initialTimerDuration", "40");
     
     fetch(`${BASE_URL}/start_timer`, {
       method: "POST",
@@ -52,6 +53,7 @@ function Admin() {
   function startShortTimer() {
     console.log("Запуск таймера на 10 секунд");
     localStorage.setItem("answerTimerSeconds", "10");
+    localStorage.setItem("initialTimerDuration", "10");
     
     fetch(`${BASE_URL}/start_timer`, {
       method: "POST",

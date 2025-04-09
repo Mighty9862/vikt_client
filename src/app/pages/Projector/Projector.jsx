@@ -73,10 +73,10 @@ function Projector() {
       return;
     }
 
-    const timerDuration = localStorage.getItem("answerTimerSeconds");
-    if (!timerDuration) return;
+    const initialDuration = localStorage.getItem("initialTimerDuration");
+    if (!initialDuration) return;
 
-    const duration = parseInt(timerDuration, 10);
+    const duration = parseInt(initialDuration, 10);
     
     // Запускаем звук только если это начало таймера (40 или 10 секунд)
     if (second === 40 || second === 10) {
