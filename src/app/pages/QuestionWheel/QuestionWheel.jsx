@@ -39,6 +39,21 @@ const QuestionWheel = ({
   const audioRef = useRef(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [showAudioPrompt, setShowAudioPrompt] = useState(true);
+  const [shouldShow, setShouldShow] = useState(false);
+
+  useEffect(() => {
+    // Проверяем, нужно ли показывать колесо
+    const shouldShowWheel = localStorage.getItem("shouldShowWheel") === "true";
+    setShouldShow(isVisible && shouldShowWheel);
+    
+    // Если колесо должно быть видимым, но флаг не установлен, скрываем его
+    if (isVisible && !shouldShowWheel) {
+      // Вызываем onAnimationComplete, чтобы не блокировать дальнейшую работу
+      if (onAnimationComplete) {
+        onAnimationComplete();
+      }
+    }
+  }, [isVisible, onAnimationComplete]);
 
   useEffect(() => {
     // Создаем аудио элемент при монтировании компонента
@@ -67,7 +82,7 @@ const QuestionWheel = ({
   };
 
   useEffect(() => {
-    if (isVisible && audioRef.current && audioEnabled) {
+    if (shouldShow && audioRef.current && audioEnabled) {
       console.log("Attempting to play sound...");
       try {
         audioRef.current.currentTime = 0;
@@ -95,7 +110,7 @@ const QuestionWheel = ({
         audioRef.current.pause();
       }
     };
-  }, [isVisible, audioEnabled]);
+  }, [shouldShow, audioEnabled]);
 
   // Создаем расширенный список вопросов, добавляя вопросы в начало и конец
   const extendedQuestions = [...questions, ...questions, ...questions];
@@ -154,7 +169,7 @@ const QuestionWheel = ({
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {isVisible && (
+        {shouldShow && (
           <motion.div
             className={styles.modal}
             variants={modalVariants}

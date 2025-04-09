@@ -221,10 +221,17 @@ function Question() {
 
             if (data.timer === false && data.answer !== null) {
               console.log("Устанавливаем новое колесо");
-              setPendingQuestion(data);
-              setShowWheel(true);
-              localStorage.setItem("pendingQuestion", JSON.stringify(data));
-              localStorage.setItem("showWheel", "true");
+              // Проверяем, нужно ли показывать колесо
+              const shouldShowWheel = localStorage.getItem("shouldShowWheel") === "true";
+              
+              if (shouldShowWheel) {
+                setPendingQuestion(data);
+                setShowWheel(true);
+                localStorage.setItem("pendingQuestion", JSON.stringify(data));
+                localStorage.setItem("showWheel", "true");
+                // Сбрасываем флаг после использования
+                localStorage.removeItem("shouldShowWheel");
+              }
             }
           }
         } catch (error) {
