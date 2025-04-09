@@ -9,7 +9,6 @@ import { getWebSocketUrl } from "../../../api/websocketConfig";
 function Projector() {
   const [seconds, setSeconds] = useState(0);
   const [newSeconds, setNewSeconds] = useState(null);
-  const [initialTimerDuration, setInitialTimerDuration] = useState(null);
   const navigate = useNavigate();
   const [question, setQuestion] = useState("");
   const [chapter, setChapter] = useState("");
@@ -74,14 +73,22 @@ function Projector() {
       return;
     }
 
-    // Запускаем звук только если это начало таймера
-    if (second === initialTimerDuration) {
-      if (initialTimerDuration === 40 && mainAudioRef.current) {
-        mainAudioRef.current.currentTime = 0;
-        mainAudioRef.current.play();
-      } else if (initialTimerDuration === 10 && shortAudioRef.current) {
-        shortAudioRef.current.currentTime = 0;
-        shortAudioRef.current.play();
+    const timerDuration = localStorage.getItem("answerTimerSeconds");
+    if (!timerDuration) return;
+
+    const duration = parseInt(timerDuration, 10);
+    
+    // Запускаем звук только если это начало таймера (40 или 10 секунд)
+    if (second === 40 || second === 10) {
+      // Проверяем, что это действительно начало таймера, а не просто совпадение с числом 10
+      if (second === duration) {
+        if (duration === 40) {
+          mainAudioRef.current.currentTime = 0;
+          mainAudioRef.current.play();
+        } else if (duration === 10) {
+          shortAudioRef.current.currentTime = 0;
+          shortAudioRef.current.play();
+        }
       }
     }
   };
@@ -168,10 +175,8 @@ function Projector() {
             if (timerDuration) {
               const duration = parseInt(timerDuration, 10);
               setNewSeconds(duration);
-              setInitialTimerDuration(duration);
             } else {
               setNewSeconds(40);
-              setInitialTimerDuration(40);
             }
             
             setTimer(true);
