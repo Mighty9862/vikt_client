@@ -1,0 +1,18 @@
+.rating {
+   text-align: center;
+
+   tbody tr:nth-child(odd) {
+     background-color: var(--red-color);
+     color: white;
+   }
+
+   th {
+     padding: .8rem;
+     font-size: 1.6rem;
+   }
+
+   td {
+     width: 19vw;
+     font-size: 1.5rem;
+   }
+ }
