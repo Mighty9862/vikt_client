@@ -18,6 +18,9 @@ function Admin() {
       method: "POST",
     });
 
+    // Устанавливаем флаг, что колесо должно запуститься
+    localStorage.setItem("shouldShowWheel", "true");
+    
     setCount((count) => count + 1);
   }
   function stopGame() {

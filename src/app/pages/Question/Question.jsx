@@ -172,7 +172,17 @@ function Question() {
                 timerDuration.toString()
               );
 
-              setShowWheel(false);
+              // Проверяем, нужно ли показывать колесо
+              const shouldShowWheel = localStorage.getItem("shouldShowWheel") === "true";
+              
+              if (shouldShowWheel) {
+                setShowWheel(true);
+                // Сбрасываем флаг после использования
+                localStorage.removeItem("shouldShowWheel");
+              } else {
+                setShowWheel(false);
+              }
+              
               setPendingQuestion(null);
               setAnswerSubmitted(false);
               setNewSeconds(timerDuration);

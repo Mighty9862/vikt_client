@@ -143,9 +143,16 @@ function Projector() {
             navigate("/rating", { state: { data: data } });
           } else if (data.type === "question") {
             if (data.content !== prevQuestionRef.current) {
-              setShowWheel(true);
+              // Проверяем, нужно ли показывать колесо
+              const shouldShowWheel = localStorage.getItem("shouldShowWheel") === "true";
+              
+              if (shouldShowWheel) {
+                setShowWheel(true);
+                // Сбрасываем флаг после использования
+                localStorage.removeItem("shouldShowWheel");
+              }
+              
               prevQuestionRef.current = data.content; // Сохраняем текущий вопрос
-
               setPendingQuestion(data);
             } else {
               // Если условия не выполняются, просто обновляем данные без анимации
