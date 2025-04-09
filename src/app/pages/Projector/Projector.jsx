@@ -75,13 +75,14 @@ function Projector() {
 
     // Получаем длительность таймера из localStorage
     const timerDuration = localStorage.getItem("answerTimerSeconds");
-    const duration = timerDuration ? parseInt(timerDuration, 10) : 40;
+    const initialDuration = timerDuration ? parseInt(timerDuration, 10) : 40;
     
-    if (second === duration) {
-      if (duration === 40 && mainAudioRef.current) {
+    // Запускаем звук только в начале таймера
+    if (second === initialDuration) {
+      if (initialDuration === 40 && mainAudioRef.current) {
         mainAudioRef.current.currentTime = 0;
         mainAudioRef.current.play();
-      } else if (duration === 10 && shortAudioRef.current) {
+      } else if (initialDuration === 10 && shortAudioRef.current) {
         shortAudioRef.current.currentTime = 0;
         shortAudioRef.current.play();
       }
