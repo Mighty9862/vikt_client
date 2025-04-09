@@ -50,6 +50,7 @@ function Question() {
     const savedAnswerSubmitted = localStorage.getItem("answerSubmitted");
     const savedSeconds = localStorage.getItem("answerTimerSeconds");
     const savedQuestion = localStorage.getItem("question");
+    const savedChapter = localStorage.getItem("chapter");
 
     // Восстанавливаем все сохраненные состояния при монтировании
     if (savedTimer) {
@@ -61,6 +62,12 @@ function Question() {
     if (savedSeconds && savedQuestion) {
       setSeconds(parseInt(savedSeconds));
       setNewSeconds(parseInt(savedSeconds));
+    }
+    if (savedQuestion) {
+      setQuestion(savedQuestion);
+    }
+    if (savedChapter) {
+      setChapter(savedChapter);
     }
   }, []);
 
@@ -79,6 +86,11 @@ function Question() {
       localStorage.removeItem("showWheel");
       localStorage.removeItem("pendingQuestion");
     };
+  }, []);
+
+  // Очищаем флаг shouldShowWheel при загрузке страницы
+  useEffect(() => {
+    localStorage.removeItem("shouldShowWheel");
   }, []);
 
   useEffect(() => {
@@ -244,23 +256,13 @@ function Question() {
     }
   }, [seconds]);
 
-  // Добавьте этот useEffect после остальных
+  // Сохраняем данные в localStorage при их изменении
   useEffect(() => {
-    const savedTimer = localStorage.getItem("timer");
-    const savedAnswerSubmitted = localStorage.getItem("answerSubmitted");
-    const savedSeconds = localStorage.getItem("answerTimerSeconds");
-
-    if (savedTimer) {
-      setTimer(JSON.parse(savedTimer));
-    }
-    if (savedAnswerSubmitted) {
-      setAnswerSubmitted(JSON.parse(savedAnswerSubmitted));
-    }
-    if (savedSeconds) {
-      setSeconds(parseInt(savedSeconds));
-      setNewSeconds(parseInt(savedSeconds));
-    }
-  }, []);
+    if (question) localStorage.setItem("question", question);
+    if (chapter) localStorage.setItem("chapter", chapter);
+    if (timer !== null) localStorage.setItem("timer", timer.toString());
+    if (answerSubmitted) localStorage.setItem("answerSubmitted", answerSubmitted.toString());
+  }, [question, chapter, timer, answerSubmitted]);
 
   // Отправка ответа
   async function sendAnswerData(e) {

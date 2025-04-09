@@ -10,23 +10,40 @@ function Projector() {
   const [seconds, setSeconds] = useState(0);
   const [newSeconds, setNewSeconds] = useState(null);
   const navigate = useNavigate();
-  const [question, setQuestion] = useState("");
-  const [chapter, setChapter] = useState("");
-  const [timer, setTimer] = useState(null);
-  const [showAnswer, setShowAnswer] = useState(null);
-  const [questionImage, setQuestionImage] = useState("");
-  const [answerImage, setAnswerImage] = useState("");
+  const [question, setQuestion] = useState(() => localStorage.getItem("question") || "");
+  const [chapter, setChapter] = useState(() => localStorage.getItem("chapter") || "");
+  const [timer, setTimer] = useState(() => localStorage.getItem("timer") === "true" || null);
+  const [showAnswer, setShowAnswer] = useState(() => localStorage.getItem("showAnswer") === "true" || null);
+  const [questionImage, setQuestionImage] = useState(() => localStorage.getItem("questionImage") || "");
+  const [answerImage, setAnswerImage] = useState(() => localStorage.getItem("answerImage") || "");
   const [showWheel, setShowWheel] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState(null);
   const wsRef = useRef(null);
-  const prevQuestionRef = useRef("");
+  const prevQuestionRef = useRef(() => localStorage.getItem("prevQuestion") || "");
   const reconnectTimeoutRef = useRef(null);
   const isConnecting = useRef(false);
   const mainAudioRef = useRef(null);
   const shortAudioRef = useRef(null);
   const finalAudioRef = useRef(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
-  const [correctAnswer, setCorrectAnswer] = useState("");
+  const [correctAnswer, setCorrectAnswer] = useState(() => localStorage.getItem("correctAnswer") || "");
+
+  // Очищаем флаг shouldShowWheel при загрузке страницы
+  useEffect(() => {
+    localStorage.removeItem("shouldShowWheel");
+  }, []);
+
+  // Сохраняем данные в localStorage при их изменении
+  useEffect(() => {
+    if (question) localStorage.setItem("question", question);
+    if (chapter) localStorage.setItem("chapter", chapter);
+    if (timer !== null) localStorage.setItem("timer", timer.toString());
+    if (showAnswer !== null) localStorage.setItem("showAnswer", showAnswer.toString());
+    if (questionImage) localStorage.setItem("questionImage", questionImage);
+    if (answerImage) localStorage.setItem("answerImage", answerImage);
+    if (correctAnswer) localStorage.setItem("correctAnswer", correctAnswer);
+    if (prevQuestionRef.current) localStorage.setItem("prevQuestion", prevQuestionRef.current);
+  }, [question, chapter, timer, showAnswer, questionImage, answerImage, correctAnswer]);
 
   // Инициализация аудио элементов
   useEffect(() => {
