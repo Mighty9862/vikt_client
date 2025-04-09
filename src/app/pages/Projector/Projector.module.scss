@@ -75,13 +75,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
 
     .timer {
-      margin: 2rem 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      margin: 1rem;
     }
 
     .chapter {
