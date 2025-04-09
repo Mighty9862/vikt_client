@@ -9,13 +9,16 @@ function AnswerTimer({ duration, onTimeUp, time, question }) {
   const [progressLoaded, setProgressLoaded] = useState(0);
   const intervalRef = useRef();
   const prevQuestionRef = useRef(question);
+  const prevDurationRef = useRef(duration);
 
-  // Эффект для сброса таймера при изменении вопроса
+  // Эффект для сброса таймера при изменении вопроса или длительности
   useEffect(() => {
-    if (prevQuestionRef.current !== question && question) {
+    if ((prevQuestionRef.current !== question && question) || 
+        (prevDurationRef.current !== duration && duration)) {
       setSeconds(duration);
       localStorage.setItem('answerTimerSeconds', duration.toString());
       prevQuestionRef.current = question;
+      prevDurationRef.current = duration;
     }
   }, [question, duration]);
 

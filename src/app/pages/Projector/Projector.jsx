@@ -138,6 +138,13 @@ function Projector() {
             }
           } else if (data.type === "screen") {
             navigate("/screen");
+          } else if (data.type === "timer") {
+            // Обработка сообщения о запуске таймера
+            if (data.duration !== undefined) {
+              setNewSeconds(data.duration);
+              localStorage.setItem("answerTimerSeconds", data.duration.toString());
+              setTimer(true);
+            }
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
@@ -188,19 +195,19 @@ function Projector() {
             setQuestion(pendingQuestion.content);
             setChapter(pendingQuestion.section);
             setCorrectAnswer(pendingQuestion.answer);
-            const timerDuration = 40;
+            const timerDuration = newSeconds || 40; // Используем значение из состояния или 40 по умолчанию
             setNewSeconds(timerDuration);
             localStorage.setItem("answerTimerSeconds", timerDuration);
             setTimer(pendingQuestion.timer);
             setShowAnswer(pendingQuestion.show_answer);
             setQuestionImage(
               pendingQuestion.question_image
-                ? `http://10.10.0.88:8000/static/images/${pendingQuestion.question_image}`
+                ? `http://80.253.19.93:8000/static/images/${pendingQuestion.question_image}`
                 : ""
             );
             setAnswerImage(
               pendingQuestion.answer_image
-                ? `http://10.10.0.88:8000/static/images/${pendingQuestion.answer_image}`
+                ? `http://80.253.19.93:8000/static/images/${pendingQuestion.answer_image}`
                 : ""
             );
             setPendingQuestion(null);
@@ -217,7 +224,7 @@ function Projector() {
               {timer && (
                 <AnswerTimer
                   time={extractTime}
-                  duration={40}
+                  duration={newSeconds || 40}
                   onTimeUp={handleTimeUp}
                   question={question}
                 />

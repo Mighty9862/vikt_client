@@ -3,7 +3,7 @@ import Button from "../../components/button/Button";
 import { useState } from "react";
 import { m } from "framer-motion";
 
-const BASE_URL = "http://10.10.0.88:8000/api/v2/websocket/admin";
+const BASE_URL = "http://80.253.19.93:8000/api/v2/websocket/admin";
 
 function Admin() {
   const [count, setCount] = useState(0);
@@ -43,6 +43,16 @@ function Admin() {
   function startTimer() {
     fetch(`${BASE_URL}/start_timer`, {
       method: "POST",
+    });
+  }
+
+  function startShortTimer() {
+    fetch(`${BASE_URL}/start_timer`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ duration: 10 }),
     });
   }
 
@@ -99,7 +109,8 @@ function Admin() {
       {/* Таймер */}
       <div className={styles.timer}>
         <h1>Настройки таймера</h1>
-        <Button onClick={startTimer}>Запуск таймера</Button>
+        <Button onClick={startTimer}>Запуск таймера (40 сек)</Button>
+        <Button onClick={startShortTimer}>Запуск таймера (10 сек)</Button>
         <div className={styles.time}></div>
       </div>
     </div>
