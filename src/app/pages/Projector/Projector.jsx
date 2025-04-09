@@ -23,19 +23,27 @@ function Projector() {
   const reconnectTimeoutRef = useRef(null);
   const isConnecting = useRef(false);
   const mainAudioRef = useRef(null);
+  const shortAudioRef = useRef(null);
   const finalAudioRef = useRef(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState("");
 
   // Инициализация аудио элементов
   useEffect(() => {
-    mainAudioRef.current = new Audio("/timer.mp3"); // Основная музыка таймера
+    mainAudioRef.current = new Audio("/timer.mp3"); // Основная музыка таймера (40 секунд)
     mainAudioRef.current.volume = 0.5;
+    
+    shortAudioRef.current = new Audio("/timer_10.mp3"); // Музыка для таймера на 10 секунд
+    shortAudioRef.current.volume = 0.5;
 
     return () => {
       if (mainAudioRef.current) {
         mainAudioRef.current.pause();
         mainAudioRef.current = null;
+      }
+      if (shortAudioRef.current) {
+        shortAudioRef.current.pause();
+        shortAudioRef.current = null;
       }
     };
   }, []);
@@ -44,6 +52,10 @@ function Projector() {
     if (!timer && mainAudioRef.current) {
       mainAudioRef.current.pause();
       mainAudioRef.current.currentTime = 0;
+    }
+    if (!timer && shortAudioRef.current) {
+      shortAudioRef.current.pause();
+      shortAudioRef.current.currentTime = 0;
     }
   }, [timer, question]);
 
@@ -61,9 +73,18 @@ function Projector() {
       return;
     }
 
-    if (second === 40 && mainAudioRef.current) {
-      mainAudioRef.current.currentTime = 0;
-      mainAudioRef.current.play();
+    // Получаем длительность таймера из localStorage
+    const timerDuration = localStorage.getItem("answerTimerSeconds");
+    const duration = timerDuration ? parseInt(timerDuration, 10) : 40;
+    
+    if (second === duration) {
+      if (duration === 40 && mainAudioRef.current) {
+        mainAudioRef.current.currentTime = 0;
+        mainAudioRef.current.play();
+      } else if (duration === 10 && shortAudioRef.current) {
+        shortAudioRef.current.currentTime = 0;
+        shortAudioRef.current.play();
+      }
     }
   };
 
