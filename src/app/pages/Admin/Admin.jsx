@@ -41,18 +41,24 @@ function Admin() {
     });
   }
   function startTimer() {
+    console.log("Запуск таймера на 40 секунд");
+    localStorage.setItem("answerTimerSeconds", "40");
+    
     fetch(`${BASE_URL}/start_timer`, {
       method: "POST",
     });
   }
 
   function startShortTimer() {
+    console.log("Запуск таймера на 10 секунд");
+    localStorage.setItem("answerTimerSeconds", "10");
+    
     fetch(`${BASE_URL}/start_timer`, {
       method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ duration: 10 }),
+    }).then(response => {
+      console.log("Ответ сервера:", response);
+    }).catch(error => {
+      console.error("Ошибка:", error);
     });
   }
 

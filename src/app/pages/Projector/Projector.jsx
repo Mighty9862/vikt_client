@@ -112,7 +112,7 @@ function Projector() {
           }
 
           const data = JSON.parse(event.data);
-          console.log(data);
+          console.log("Получено WebSocket сообщение:", data);
           if (data.type === "rating") {
             navigate("/rating", { state: { data: data } });
           } else if (data.type === "question") {
@@ -140,11 +140,19 @@ function Projector() {
             navigate("/screen");
           } else if (data.type === "timer") {
             // Обработка сообщения о запуске таймера
-            if (data.duration !== undefined) {
-              setNewSeconds(data.duration);
-              localStorage.setItem("answerTimerSeconds", data.duration.toString());
-              setTimer(true);
+            console.log("Получено сообщение о таймере:", data);
+            
+            // Получаем длительность таймера из localStorage
+            const timerDuration = localStorage.getItem("answerTimerSeconds");
+            console.log("Длительность таймера из localStorage:", timerDuration);
+            
+            if (timerDuration) {
+              setNewSeconds(parseInt(timerDuration, 10));
+            } else {
+              setNewSeconds(40); // Значение по умолчанию
             }
+            
+            setTimer(true);
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
@@ -195,9 +203,13 @@ function Projector() {
             setQuestion(pendingQuestion.content);
             setChapter(pendingQuestion.section);
             setCorrectAnswer(pendingQuestion.answer);
-            const timerDuration = newSeconds || 40; // Используем значение из состояния или 40 по умолчанию
-            setNewSeconds(timerDuration);
-            localStorage.setItem("answerTimerSeconds", timerDuration);
+            
+            // Получаем длительность таймера из localStorage
+            const timerDuration = localStorage.getItem("answerTimerSeconds");
+            const duration = timerDuration ? parseInt(timerDuration, 10) : 40;
+            
+            setNewSeconds(duration);
+            localStorage.setItem("answerTimerSeconds", duration.toString());
             setTimer(pendingQuestion.timer);
             setShowAnswer(pendingQuestion.show_answer);
             setQuestionImage(
