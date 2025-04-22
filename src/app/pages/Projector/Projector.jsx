@@ -23,27 +23,19 @@ function Projector() {
   const reconnectTimeoutRef = useRef(null);
   const isConnecting = useRef(false);
   const mainAudioRef = useRef(null);
-  const shortAudioRef = useRef(null);
   const finalAudioRef = useRef(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState("");
 
   // Инициализация аудио элементов
   useEffect(() => {
-    mainAudioRef.current = new Audio("/timer.mp3"); // Основная музыка таймера (40 секунд)
+    mainAudioRef.current = new Audio("/timer.mp3"); // Основная музыка таймера
     mainAudioRef.current.volume = 0.5;
-    
-    shortAudioRef.current = new Audio("/timer_10.mp3"); // Музыка для таймера на 10 секунд
-    shortAudioRef.current.volume = 0.5;
 
     return () => {
       if (mainAudioRef.current) {
         mainAudioRef.current.pause();
         mainAudioRef.current = null;
-      }
-      if (shortAudioRef.current) {
-        shortAudioRef.current.pause();
-        shortAudioRef.current = null;
       }
     };
   }, []);
@@ -52,10 +44,6 @@ function Projector() {
     if (!timer && mainAudioRef.current) {
       mainAudioRef.current.pause();
       mainAudioRef.current.currentTime = 0;
-    }
-    if (!timer && shortAudioRef.current) {
-      shortAudioRef.current.pause();
-      shortAudioRef.current.currentTime = 0;
     }
   }, [timer, question]);
 
@@ -73,23 +61,9 @@ function Projector() {
       return;
     }
 
-    const initialDuration = localStorage.getItem("initialTimerDuration");
-    if (!initialDuration) return;
-
-    const duration = parseInt(initialDuration, 10);
-    
-    // Запускаем звук только если это начало таймера (40 или 10 секунд)
-    if (second === 40 || second === 10) {
-      // Проверяем, что это действительно начало таймера, а не просто совпадение с числом 10
-      if (second === duration) {
-        if (duration === 40) {
-          mainAudioRef.current.currentTime = 0;
-          mainAudioRef.current.play();
-        } else if (duration === 10) {
-          shortAudioRef.current.currentTime = 0;
-          shortAudioRef.current.play();
-        }
-      }
+    if (second ===10 && mainAudioRef.current) {
+      mainAudioRef.current.currentTime = 0;
+      mainAudioRef.current.play();
     }
   };
 
@@ -138,7 +112,6 @@ function Projector() {
           }
 
           const data = JSON.parse(event.data);
-          console.log("Получено WebSocket сообщение:", data);
           if (data.type === "rating") {
             navigate("/rating", { state: { data: data } });
           } else if (data.type === "question") {
@@ -159,27 +132,11 @@ function Projector() {
                 setNewSeconds(data.seconds);
               }
               if (data.show_answer !== undefined) {
+                setShowAnswer(data.show_answer);
               }
-              setShowAnswer(data.show_answer);
             }
           } else if (data.type === "screen") {
             navigate("/screen");
-          } else if (data.type === "timer") {
-            // Обработка сообщения о запуске таймера
-            console.log("Получено сообщение о таймере:", data);
-            
-            // Получаем длительность таймера из localStorage
-            const timerDuration = localStorage.getItem("answerTimerSeconds");
-            console.log("Длительность таймера из localStorage:", timerDuration);
-            
-            if (timerDuration) {
-              const duration = parseInt(timerDuration, 10);
-              setNewSeconds(duration);
-            } else {
-              setNewSeconds(40);
-            }
-            
-            setTimer(true);
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
@@ -211,14 +168,14 @@ function Projector() {
     };
   }, [connectWebSocket]);
 
-  const handleTimeUp = () => {};
+  const handleTimeUp = () => {
+    setTimer(null);
+  };
 
   const extractTime = (second) => {
     setSeconds(second);
     handleTimerAudio(second);
   };
-
-  console.log(correctAnswer);
 
   return (
     <div className={styles.window}>
@@ -230,13 +187,9 @@ function Projector() {
             setQuestion(pendingQuestion.content);
             setChapter(pendingQuestion.section);
             setCorrectAnswer(pendingQuestion.answer);
-            
-            // Получаем длительность таймера из localStorage
-            const timerDuration = localStorage.getItem("answerTimerSeconds");
-            const duration = timerDuration ? parseInt(timerDuration, 10) : 40;
-            
-            setNewSeconds(duration);
-            localStorage.setItem("answerTimerSeconds", duration.toString());
+            const timerDuration = 10;
+            setNewSeconds(timerDuration);
+            localStorage.setItem("answerTimerSeconds", timerDuration);
             setTimer(pendingQuestion.timer);
             setShowAnswer(pendingQuestion.show_answer);
             setQuestionImage(
@@ -263,7 +216,7 @@ function Projector() {
               {timer && (
                 <AnswerTimer
                   time={extractTime}
-                  duration={newSeconds || 40}
+                  duration={10}
                   onTimeUp={handleTimeUp}
                   question={question}
                 />
@@ -275,6 +228,7 @@ function Projector() {
           </div>
           {showAnswer && (
             <div className={styles.correctAnswer}>
+              <div className={styles.answer}>{correctAnswer}</div>
               <div className={styles.answerImageContainer}>
                 <img
                   src={answerImage}
@@ -285,10 +239,12 @@ function Projector() {
                     e.target.style.display = "none";
                   }}
                 />
-              </div>
-              <div className={styles.correctAnswer__header}>
-                <div className={styles.answer}>{correctAnswer}</div>
-                <TeamsAnswers className={styles.answers} question={question} />
+                <div className={styles.correctAnswer__header}>
+                  <TeamsAnswers
+                    className={styles.answers}
+                    question={question}
+                  />
+                </div>
               </div>
             </div>
           )}

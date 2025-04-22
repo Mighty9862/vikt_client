@@ -41,26 +41,8 @@ function Admin() {
     });
   }
   function startTimer() {
-    console.log("Запуск таймера на 40 секунд");
-    localStorage.setItem("answerTimerSeconds", "40");
-    localStorage.setItem("initialTimerDuration", "40");
-    
     fetch(`${BASE_URL}/start_timer`, {
       method: "POST",
-    });
-  }
-
-  function startShortTimer() {
-    console.log("Запуск таймера на 10 секунд");
-    localStorage.setItem("answerTimerSeconds", "10");
-    localStorage.setItem("initialTimerDuration", "10");
-    
-    fetch(`${BASE_URL}/start_timer`, {
-      method: "POST",
-    }).then(response => {
-      console.log("Ответ сервера:", response);
-    }).catch(error => {
-      console.error("Ошибка:", error);
     });
   }
 
@@ -117,8 +99,7 @@ function Admin() {
       {/* Таймер */}
       <div className={styles.timer}>
         <h1>Настройки таймера</h1>
-        <Button onClick={startTimer}>Запуск таймера (40 сек)</Button>
-        <Button onClick={startShortTimer}>Запуск таймера (10 сек)</Button>
+        <Button onClick={startTimer}>Запуск таймера</Button>
         <div className={styles.time}></div>
       </div>
     </div>
