@@ -6,4 +6,13 @@ COPY package*.json .
 RUN npm ci
 COPY . .
 RUN npm run build
-CMD ["npm", "run", "dev"]
+
+FROM nginx:1.25-alpine
+
+COPY nginx/static.conf /etc/nginx/conf.d/default.conf
+
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+RUN chmod -R 755 /usr/share/nginx/html
