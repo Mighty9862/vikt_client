@@ -1,15 +1,71 @@
 import styles from "./Projector.module.scss";
 import AnswerTimer from "../../components/answerTimer/AnswerTimer";
 import QuestionWheel from "../QuestionWheel/QuestionWheel";
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import TeamsAnswers from "../../components/teamsAnswers/TeamsAnswers";
 import { getWebSocketUrl } from "../../../api/websocketConfig";
 
+const useAudioPlayer = () => {
+  const audioRefs = {
+    main: useRef(null),
+    timer40: useRef(null),
+    timer10: useRef(null),
+  };
+
+  useEffect(() => {
+    // Инициализация аудио элементов
+    audioRefs.main.current = new Audio("/timer.mp3");
+    audioRefs.timer40.current = new Audio("/timer.mp3");
+    audioRefs.timer10.current = new Audio("/timer_10.mp3");
+
+    // Установка громкости
+    Object.values(audioRefs).forEach((ref) => {
+      if (ref.current) ref.current.volume = 0.5;
+    });
+
+    return () => {
+      // Очистка
+      Object.values(audioRefs).forEach((ref) => {
+        if (ref.current) {
+          ref.current.pause();
+          ref.current = null;
+        }
+      });
+    };
+  }, []);
+
+  const playAudio = (type) => {
+    const audio = audioRefs[type]?.current;
+    if (!audio) return;
+
+    // Останавливаем все другие аудио
+    Object.entries(audioRefs).forEach(([key, ref]) => {
+      if (key !== type && ref.current && !ref.current.paused) {
+        ref.current.pause();
+      }
+    });
+
+    // Воспроизводим выбранное аудио
+    audio.currentTime = 0;
+    audio.play().catch((e) => console.error(`Error playing ${type} audio:`, e));
+  };
+
+  return { playAudio };
+};
+
 function Projector() {
   const [seconds, setSeconds] = useState(0);
+  const [timerSeconds, setTimerSeconds] = useState("");
   const [newSeconds, setNewSeconds] = useState(null);
   const navigate = useNavigate();
+  const timer40AudioRef = useRef(null); // Audio for 40 seconds
+  const timer10AudioRef = useRef(null); // Audio for 10 seconds
+  const [playedAudios, setPlayedAudios] = useState({
+    timer40: false,
+    timer10: false,
+    main: false,
+  });
   const [question, setQuestion] = useState("");
   const [chapter, setChapter] = useState("");
   const [timer, setTimer] = useState(null);
@@ -29,13 +85,27 @@ function Projector() {
 
   // Инициализация аудио элементов
   useEffect(() => {
-    mainAudioRef.current = new Audio("/timer.mp3"); // Основная музыка таймера
+    mainAudioRef.current = new Audio("/timer.mp3");
     mainAudioRef.current.volume = 0.5;
+
+    timer40AudioRef.current = new Audio("/timer.mp3"); // Audio for 40 seconds
+    timer40AudioRef.current.volume = 0.5;
+
+    timer10AudioRef.current = new Audio("/timer_10.mp3"); // Audio for 10 seconds
+    timer10AudioRef.current.volume = 0.5;
 
     return () => {
       if (mainAudioRef.current) {
         mainAudioRef.current.pause();
         mainAudioRef.current = null;
+      }
+      if (timer40AudioRef.current) {
+        timer40AudioRef.current.pause();
+        timer40AudioRef.current = null;
+      }
+      if (timer10AudioRef.current) {
+        timer10AudioRef.current.pause();
+        timer10AudioRef.current = null;
       }
     };
   }, []);
@@ -48,22 +118,43 @@ function Projector() {
   }, [timer, question]);
 
   // Функция для управления аудио таймера
-  const handleTimerAudio = (second) => {
-    if (!audioEnabled) {
-      try {
-        mainAudioRef.current.play().then(() => {
-          mainAudioRef.current.pause();
-          setAudioEnabled(true);
-        });
-      } catch (error) {
-        console.error("Error enabling audio:", error);
-      }
-      return;
+  const playedFlagsRef = useRef({ played40: false, played10: false });
+
+  // Модифицированная функция handleTimerAudio
+  const { playAudio } = useAudioPlayer();
+  const [lastTriggeredSecond, setLastTriggeredSecond] = useState(null);
+
+  // Обработчик таймера
+  const handleTimerUpdate = (currentSecond) => {
+    // Проверяем, нужно ли воспроизводить звук
+    if (
+      timerSeconds === 40 &&
+      currentSecond === 40 &&
+      lastTriggeredSecond !== 40
+    ) {
+      playAudio("timer40");
+      setLastTriggeredSecond(40);
+    } else if (
+      timerSeconds === 10 &&
+      currentSecond === 10 &&
+      lastTriggeredSecond !== 10
+    ) {
+      playAudio("timer10");
+      setLastTriggeredSecond(10);
+    } else if (
+      currentSecond === timerSeconds &&
+      lastTriggeredSecond !== currentSecond
+    ) {
+      playAudio("main");
+      setLastTriggeredSecond(currentSecond);
     }
 
-    if (second === 40 && mainAudioRef.current) {
-      mainAudioRef.current.currentTime = 0;
-      mainAudioRef.current.play();
+    // Сбрасываем флаг, если вышли за границы
+    if (currentSecond !== 40 && lastTriggeredSecond === 40) {
+      setLastTriggeredSecond(null);
+    }
+    if (currentSecond !== 10 && lastTriggeredSecond === 10) {
+      setLastTriggeredSecond(null);
     }
   };
 
@@ -118,7 +209,6 @@ function Projector() {
             if (data.content !== prevQuestionRef.current) {
               setShowWheel(true);
               prevQuestionRef.current = data.content; // Сохраняем текущий вопрос
-
               setPendingQuestion(data);
             } else {
               // Если условия не выполняются, просто обновляем данные без анимации
@@ -133,6 +223,14 @@ function Projector() {
               }
               if (data.show_answer !== undefined) {
                 setShowAnswer(data.show_answer);
+<<<<<<< HEAD
+=======
+              }
+              if (data.timer_seconds !== undefined) {
+                console.log(data.timer_seconds);
+                setTimerSeconds(data.timer_seconds);
+                handleTimerUpdate(data.seconds);
+>>>>>>> main
               }
             }
           } else if (data.type === "screen") {
@@ -174,7 +272,7 @@ function Projector() {
 
   const extractTime = (second) => {
     setSeconds(second);
-    handleTimerAudio(second);
+    handleTimerUpdate(second);
   };
 
   return (
@@ -187,7 +285,7 @@ function Projector() {
             setQuestion(pendingQuestion.content);
             setChapter(pendingQuestion.section);
             setCorrectAnswer(pendingQuestion.answer);
-            const timerDuration = 40;
+            const timerDuration = timerSeconds;
             setNewSeconds(timerDuration);
             localStorage.setItem("answerTimerSeconds", timerDuration);
             setTimer(pendingQuestion.timer);
@@ -216,14 +314,23 @@ function Projector() {
               {timer && (
                 <AnswerTimer
                   time={extractTime}
-                  duration={40}
+                  duration={timerSeconds}
                   onTimeUp={handleTimeUp}
                   question={question}
                 />
               )}
             </div>
             {!showAnswer && (
-              <p className={styles.question}>{question || "Ожидайте вопрос"}</p>
+              <p className={styles.question}>
+                {question
+                  ? question.split(/\r?\n|\u000A/g).map((line, index) => (
+                      <React.Fragment key={index}>
+                        {line}
+                        <br />
+                      </React.Fragment>
+                    ))
+                  : "Ожидайте вопрос"}
+              </p>
             )}
           </div>
           {showAnswer && (

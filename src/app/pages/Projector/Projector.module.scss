@@ -46,7 +46,11 @@
         object-fit:cover;
         border-radius: 1rem;
         min-width: 30vw;
+<<<<<<< HEAD
         min-height: 65vh;
+=======
+        min-height: 75vh;
+>>>>>>> main
         max-width: 30vw;
         max-height: 70vh;
         margin-left: 1.3rem;
@@ -87,6 +91,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
 
     .timer {
       margin: 0.5rem;
@@ -114,7 +119,7 @@
     .question {
       font-size: 3.5rem;
       margin-bottom: 1rem;
-      width: 75vw;
+      width: 85vw;
       display: flex;
       justify-content: center;
 

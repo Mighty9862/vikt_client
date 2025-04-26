@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 function AnswerTimer({ duration, onTimeUp, time, question }) {
   const [seconds, setSeconds] = useState(() => {
     const storedSeconds = localStorage.getItem("answerTimerSeconds");
+<<<<<<< HEAD
     return storedSeconds ? parseInt(storedSeconds, 10) : duration;
+=======
+    return storedSeconds ? parseInt(storedSeconds) : duration;
+>>>>>>> main
   });
   const [progressLoaded, setProgressLoaded] = useState(0);
   const intervalRef = useRef();
