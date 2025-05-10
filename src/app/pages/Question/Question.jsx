@@ -24,7 +24,6 @@ function Question() {
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [seconds, setSeconds] = useState(null);
-  const [timerSeconds, setTimerSeconds] = useState('')
   const [question, setQuestion] = useState("");
   const [chapter, setChapter] = useState("");
   const [newSeconds, setNewSeconds] = useState(null);
@@ -153,7 +152,7 @@ function Question() {
 
           const data = JSON.parse(event.data);
 
-          const timerDuration = timerSeconds;
+          const timerDuration = 40;
 
           if (isComponentMounted) {
             const isNewQuestion =
@@ -199,10 +198,6 @@ function Question() {
               setShowWheel(true);
               localStorage.setItem("pendingQuestion", JSON.stringify(data));
               localStorage.setItem("showWheel", "true");
-            }
-
-            if (data.timer_seconds !== undefined) {
-              setTimerSeconds(data.timer_seconds)
             }
           }
         } catch (error) {
@@ -328,7 +323,7 @@ function Question() {
         isVisible={showWheel}
         onAnimationComplete={() => {
           if (pendingQuestion) {
-            const timerDuration = timerSeconds;
+            const timerDuration = 40;
             setNewSeconds(timerDuration);
             setChapter(pendingQuestion.section || "");
             setQuestion(pendingQuestion.content || "");
@@ -362,7 +357,7 @@ function Question() {
               {timer && (
                 <AnswerTimer
                   time={extractTime}
-                  duration={timerSeconds}
+                  duration={newSeconds}
                   onTimeUp={handleTimeUp}
                   question={question}
                 />
