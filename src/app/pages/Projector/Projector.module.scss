@@ -1,15 +1,14 @@
 .window {
   display: flex;
   flex-direction: column;
-  justify-content: start;
   align-items: center;
+  justify-content: center;
   background-image: url(../../../backgrounds/projector_page.png);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   width: 100vw;
   height: 100vh;
-  padding: 1rem;
   overflow: hidden;
 
   @media (max-width: 1024px) {
@@ -17,54 +16,40 @@
   }
 
   .correctAnswer {
-    display: grid;
-    grid-column: 2;
-    // justify-content: center;
+    justify-content: center;
     align-items: center;
-    gap: 1rem;
-    width: 100vw;
-    // max-width: 1900px;
-    // margin: 0 auto;
+    width: 100%;
     height: 100%;
-
-    // box-sizing: border-box;
+    padding: 1rem;
 
     .answerImageContainer {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      
-      // flex: 1;
-      // flex-direction: row;
-      // justify-content: space-between;
-      // max-width: 30%;
-      // display: flex;
-      // justify-content: center;
+      display: flex;
+      flex-direction: row;
+      max-width: 50%;
+      justify-content: center;
       align-items: center;
 
       img {
-        object-fit:cover;
         border-radius: 1rem;
-        min-width: 30vw;
-        min-height: 75vh;
-        max-width: 30vw;
+        min-width: 40vw;
+        min-height: 55vh;
+        max-width: 55vw;
         max-height: 70vh;
-        margin-left: 1.3rem;
+        object-fit: contain;
       }
 
       .correctAnswer__header {
-        flex: 1;
-        // max-width: 0vw;
-        width: 100vw;
-        display: flex;
-        max-height: 90vh;
+        max-width: 55%;
+        max-height: 100%;
         font-family: "Helios";
-        // margin-left: 0.1rem;
 
         .answers {
-          flex: 1;
-          max-height: 100%;
-          // width: 100vw;
+          font-size: 2.5rem;
+          background: rgba(90, 210, 94, 0.724);
+          padding: 1rem;
+          margin-bottom: 1rem;
+          text-align: center;
+          border-radius: 0.5rem;
         }
       }
     }
@@ -72,14 +57,13 @@
     .answer {
       font-family: "Inter", sans-serif;
       font-size: 3.3rem;
-      // font-family: serif;
       font-weight: bolder;
-      width: 100vw;
+      width: 100%;
+      margin-bottom: 0.5rem;
       background: rgba(74, 207, 30, 0.496);
-      padding: .2rem;
-      // margin-bottom: 1rem;
+      padding: 0.2rem;
       text-align: center;
-      border-radius: .5rem;
+      border-radius: 0.5rem;
     }
   }
 
@@ -87,24 +71,22 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
 
     .timer {
-      margin: 0.5rem;
+      margin: 1rem;
     }
 
     .chapter {
-      font-size: 4.5rem;
+      font-size: 4rem;
       color: var(--header-color);
+      margin-top: 1vh;
 
       @media (max-width: 1024px) {
-        font-size: 3rem;
-        margin-bottom: 0.5rem;
+        font-size: 4rem;
       }
 
       @media (max-width: 768px) {
         font-size: 2.5rem;
-        margin-bottom: 0.2rem;
       }
 
       @media (max-width: 480px) {
@@ -113,9 +95,8 @@
     }
 
     .question {
-      font-size: 3.5rem;
-      margin-bottom: 1rem;
-      width: 85vw;
+      font-size: 2.5rem;
+      width: 75vw;
       display: flex;
       justify-content: center;
 
@@ -138,18 +119,14 @@
   .container {
     width: 40vw;
     height: 55vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 
     .image {
       border-radius: 18px;
       object-fit: contain;
-      min-width: 60vw;
-      min-height: 40vh;
+      min-width: 15vw;
+      min-height: 15vh;
       width: 100%;
       height: 100%;
-      margin-bottom: 2rem;
     }
     img {
       border-radius: 18px;
